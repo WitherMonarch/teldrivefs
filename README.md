@@ -21,9 +21,11 @@ TeldriveFS is verified on the following distributions, feel free to test on othe
 
 TeldriveFS is installed using an install script, it can be customized by downloading it, editing it and then running it.
 
-One-line install:
+Fastest install:
 ```
-wget -qO- https://raw.githubusercontent.com/WitherMonarch/teldrivefs/main/teldrivefs-install.sh | sudo bash
+wget https://raw.githubusercontent.com/WitherMonarch/teldrivefs/main/teldrivefs-install.sh
+chmod +x teldrivefs-install.sh
+sudo ./teldrivefs-install.sh
 ```
 
 To use the network drive, use the account **user-rw** for write permissions and **user-ro** for read-only permissions. Their password is their username by default but can be changed during the install.
