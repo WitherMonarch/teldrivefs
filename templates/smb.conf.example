@@ -1,0 +1,22 @@
+[global]
+    server role = standalone server
+    workgroup = WORKGROUP
+    logging = syslog
+    passdb backend = tdbsam
+
+[teldrivefs]
+    path = /mnt/teldrivefs
+    browseable = yes
+    dfree command = /opt/teldrivefs/dfree.sh
+    read only = no
+    force user = user-rw
+    valid users = user-rw user-ro
+    write list = user-rw
+    create mask = 0644
+    directory mask = 0755
+    kernel oplocks = no
+    kernel share modes = no
+    posix locking = no
+    nt acl support = no
+    ea support = no
+    vfs objects = catia

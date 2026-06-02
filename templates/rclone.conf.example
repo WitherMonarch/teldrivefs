@@ -1,0 +1,14 @@
+[teldrive]
+type = teldrive
+api_host = http://localhost:8080/
+access_token = TOKEN_PASTED_BY_SCRIPT
+chunk_size = 500M
+upload_concurrency = 4
+encrypt_files = true
+random_chunk_name = true
+
+[hasher]
+type = hasher
+remote = teldrive:
+hashes = teldrive
+max_age = off

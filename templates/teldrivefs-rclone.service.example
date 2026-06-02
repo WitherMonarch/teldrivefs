@@ -1,0 +1,32 @@
+[Unit]
+Description=Rclone Mount for Teldrive
+Requires=teldrivefs-docker.service
+After=teldrivefs-docker.service network-online.target
+
+[Service]
+Type=simple
+User=teldrivefs
+Group=teldrivefs
+ExecStart=/usr/bin/rclone mount hasher:teldrivefs /mnt/teldrivefs \
+    --config /etc/teldrivefs/rclone.conf \
+    --uid 1000 \
+    --gid 1000 \
+    --dir-perms 0775 \
+    --file-perms 0664 \
+    --vfs-cache-mode full \
+    --vfs-cache-max-age 24h \
+    --vfs-cache-max-size 20G \
+    --vfs-write-back 10s \
+    --allow-other \
+    --allow-non-empty \
+    --delete-before \
+    --teldrive-hash-enabled=false \
+    --cache-dir /var/lib/teldrivefs/vfs \
+    --log-level NOTICE
+
+ExecStop=/bin/fusermount -u /mnt/teldrivefs
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

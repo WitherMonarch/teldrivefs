@@ -1,0 +1,17 @@
+#!/bin/bash
+# --- CONFIGURATION (in GB) ---
+# How much space should samba let users write on
+CAP_GB=20
+# -----------------------------
+# Conversion factor
+BLOCKS_PER_GB=$((1024 * 1024))
+CAP_KB=$((CAP_GB * BLOCKS_PER_GB))
+read total_kb free_kb <<< $(df -B 1024 --output=size,avail / | tail -1)
+# Logic: Report the smaller of the two (Reality vs Cap)
+if [ "$free_kb" -lt "$CAP_KB" ]; then
+    reported_free=$free_kb
+else
+    reported_free=$CAP_KB
+fi
+# Output for Samba
+echo "$total_kb $reported_free"

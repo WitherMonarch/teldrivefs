@@ -1,0 +1,32 @@
+services:
+  postgres:
+    image: groonga/pgroonga:latest-alpine-17
+    container_name: postgres_db
+    restart: always
+    networks:
+     - postgres
+    environment:
+      - POSTGRES_USER=teldrive
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  teldrive:
+    image: ghcr.io/tgdrive/teldrive
+    restart: always
+    container_name: teldrive
+    networks:
+     - postgres
+    volumes:
+      - /etc/teldrivefs/config.toml:/config.toml
+    ports:
+      - 8080:8080
+
+networks:
+  postgres:
+    external: true
+
+volumes:
+  postgres_data:
+    external: true
