@@ -1,64 +1,63 @@
 # teldrivefs
-Deploy [Teldrive](https://github.com/tgdrive/teldrive) as a local network share using Samba and Rclone
 
-# Usage and Requirements
+Deploy Teldrive as a local network share using Samba and Rclone with local caching and custom quota management.
 
-## Requirements
+## Features & Improvements over Teldrive
+* **Reliable File Editing:** Uses Rclone's `hasher` overlay to manage file integrity verification, resolving file-editing and sync issues present in standard Teldrive Rclone mounts.
+* **Smart Cache Protection:** Injects a custom `dfree.sh` script into Samba to report a fixed 20GB of free space, preventing clients from uploading files larger than the local disk cache.
 
-* A Telegram account
-* A server (or VM) with 35 GB storage
-* At least 1 Telegram bot
-## Recommendations
+## Prerequisites
 
-TeldriveFS is verified on the following distributions, feel free to test on others:
+### Requirements
+* A Telegram account and at least 1 Telegram bot token.
+* A server or VM with a minimum of 35 GB storage.
 
-- **Debian 13** (Cloud & Standard)
-- **Ubuntu 24.04** (Standard)
+### Verified OS & Specs
+* **Debian 13** (Cloud & Standard)
+* **Ubuntu 24.04** (Standard)
+* *Recommendation:* Use Cloud images (e.g., on Proxmox) for the lowest footprint (**1 CPU, 1 GB RAM**).
 
-> **Recommendation:** Use Cloud images (tested primarily on Proxmox) for the lowest resource footprint (1 CPU, 1 GB RAM given the the VM only).
+## Installation & Usage
 
-## Usage
+### Quick Install
+Run the automated installation script:
 
-TeldriveFS is installed using an install script, it can be customized by downloading it, editing it and then running it.
-
-Fastest install:
-```
 wget https://raw.githubusercontent.com/WitherMonarch/teldrivefs/main/teldrivefs-install.sh
 chmod +x teldrivefs-install.sh
 sudo ./teldrivefs-install.sh
-```
 
-To use the network drive, use the account **user-rw** for write permissions and **user-ro** for read-only permissions. Their password is their username by default but can be changed during the install.
+### Custom Install
+To customize configurations before deploying, download and edit the script manually:
 
-Customise the installation by downloading the script and editing it
-```
 wget https://raw.githubusercontent.com/WitherMonarch/teldrivefs/main/teldrivefs-install.sh
-```
+# Edit teldrivefs-install.sh with your preferred editor, then run:
+chmod +x teldrivefs-install.sh
+sudo ./teldrivefs-install.sh
 
-# TeldriveFS Architecture
+### Accessing the Share
+The installer configures two default Samba accounts (passwords match the usernames by default, but can be changed during installation):
+* **Read-Write Access:** user-rw
+* **Read-Only Access:** user-ro
 
-TeldriveFS creates a Samba share backed by Telegram storage, using local caching for performance and a custom quota manager to prevent disk overflow.
+## Architecture & Data Flow
 
-## Data Flow
+Telegram ↔ Teldrive (Docker) ↔ Rclone (hasher) ↔ /mnt/teldrivefs ↔ Samba
 
-`Telegram` ↔ `Teldrive (Docker)` ↔ `Rclone (hasher)` ↔ `/mnt/teldrivefs` ↔ `Samba`
+### Component Breakdown
+* **Docker (teldrivefs-docker.service):** Manages the PostgreSQL database and the Teldrive API container.
+* **Rclone (teldrivefs-rclone.service):** Mounts the Teldrive remote via a `hasher` wrapper. Manages VFS caching and transparent data transfer.
+* **Samba (smbd):** Exposes the local Rclone mount point (/mnt/teldrivefs) to the network as a standard network share.
+* **dfree.sh:** A script injected into Samba that forces the OS to report a fixed 20GB free space limit to protect the local cache.
 
-## Component Breakdown
+## Management & Structure
 
-* **Docker (`teldrivefs-docker.service`)**: Runs the PostgreSQL database and the Teldrive API container.
-* **Rclone (`teldrivefs-rclone.service`)**: Mounts the Teldrive remote via a `hasher` wrapper. Handles VFS caching and transparent encryption/decryption.
-* **Samba (`smbd`)**: Exposes the Rclone mount point to the network as a Windows/macOS/Linux share.
-* **dfree.sh**: A script injected into Samba that forces the OS to report a fixed free space (20GB). This prevents clients from attempting to copy files larger than the local cache.
+All configuration files and services are centrally managed via symlinks located in /opt/teldrivefs/symlinks/:
 
-## Management
-
-All configuration and control files are symlinked to `/opt/teldrivefs/symlinks/`:
-
-| File                        | Purpose                              |
-| :-------------------------- | :----------------------------------- |
-| `config.toml`               | Teldrive settings and secrets        |
-| `rclone.conf`               | Rclone connection & mount parameters |
-| `smb.conf`                  | Samba share definitions              |
-| `teldrivefs-docker.service` | Docker container control             |
-| `teldrivefs-rclone.service` | Rclone mount control                 |
-| `vfs/`                      | The active Rclone cache directory    |
+| File / Directory | Purpose |
+| :--- | :--- |
+| config.toml | Teldrive core settings and secrets |
+| rclone.conf | Rclone connection and mount parameters |
+| smb.conf | Samba share definitions |
+| teldrivefs-docker.service | systemd unit for Docker container control |
+| teldrivefs-rclone.service | systemd unit for Rclone mount control |
+| vfs/ | Active Rclone local cache directory |
