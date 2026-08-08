@@ -33,6 +33,9 @@ The installer configures two default Samba accounts (passwords match the usernam
 * **Read-Write Access:** `user-rw`
 * **Read-Only Access:** `user-ro`
 
+### Updating the Teldrive token
+Just like the basic Teldrive installation, the session token will expire at some point, be sure to change it when that happens (TeldriveFS will stop working).
+
 ## Architecture & Data Flow
 
 `Telegram` ↔ `Teldrive (Docker)` ↔ `Rclone (hasher)` ↔ `/mnt/teldrivefs` ↔ `Samba`
