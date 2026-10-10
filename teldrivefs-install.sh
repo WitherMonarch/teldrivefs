@@ -59,6 +59,7 @@ data-source = "postgres://teldrive:secret@postgres/postgres"
 [jwt]
 allowed-users = ["$TG_USER"]
 secret = "$JWT_SECRET"
+session-time = "87600h"
 
 [tg.uploads]
 encryption-key = "$ENC_KEY"

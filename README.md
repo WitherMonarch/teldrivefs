@@ -15,7 +15,7 @@ Deploy Teldrive as a local network share using Samba and Rclone with local cachi
 ### Verified OS & Specs
 * **Debian 13** (Cloud & Standard)
 * **Ubuntu 24.04** (Standard)
-* *Recommendation:* Use Cloud images (e.g., on Proxmox) for the lowest footprint (**1 CPU, 1 GB RAM**).
+* *Recommendation:* Use Cloud images (e.g., on Proxmox) for the lowest footprint (**1 CPU, 1-2 GB RAM**).
 
 ## Installation & Usage
 
@@ -34,7 +34,7 @@ The installer configures two default Samba accounts (passwords match the usernam
 * **Read-Only Access:** `user-ro`
 
 ### Updating the Teldrive token
-Just like the basic Teldrive installation, the session token will expire at some point, be sure to change it when that happens (TeldriveFS will stop working).
+The teldrive token should have its expiry set to 10 years, there shouldn't be a need to update it, but if an issue does happen, TeldriveFS will stop working.
 
 ## Architecture & Data Flow
 

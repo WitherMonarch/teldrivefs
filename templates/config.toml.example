@@ -4,6 +4,7 @@ data-source = "postgres://teldrive:secret@postgres/postgres"
 [jwt]
 allowed-users = ["Telegram_Username"]
 secret = "JWT_SECRET_64_CHAR"
+session-time= = "87600h"
 
 [tg.uploads]
 encryption-key = "ENCRYPTION_KEY_32_CHAR"
